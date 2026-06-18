@@ -1,6 +1,7 @@
 from pathlib import Path
-
 from services.ingestion.parsers.pdf_parser import extract_pdf_text
+from services.ingestion.preprocessing.text_cleaner import clean_text
+from services.ingestion.preprocessing.structure_fix import fix_structure
 
 
 def extract_text(file_path: str) -> str:
@@ -8,9 +9,11 @@ def extract_text(file_path: str) -> str:
     extension = Path(file_path).suffix.lower()
 
     if extension == ".pdf":
-        return extract_pdf_text(file_path)
+        raw = extract_pdf_text(file_path)
+        clean = clean_text(raw)
+        final = fix_structure(clean)
+        return final
 
-    # placeholders for now
     elif extension in [".docx", ".doc"]:
         return "DOCX parsing not implemented yet"
 
@@ -18,7 +21,7 @@ def extract_text(file_path: str) -> str:
         return "Spreadsheet parsing not implemented yet"
 
     elif extension == ".txt":
-        return open(file_path, "r", encoding="utf-8").read()
+        return clean_text(open(file_path, "r", encoding="utf-8").read())
 
     elif extension == ".html":
         return "HTML parsing not implemented yet"

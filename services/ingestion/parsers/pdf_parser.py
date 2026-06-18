@@ -2,12 +2,14 @@ import fitz  # PyMuPDF
 
 
 def extract_pdf_text(file_path: str) -> str:
-
     doc = fitz.open(file_path)
 
-    text = ""
+    text_blocks = []
 
     for page in doc:
-        text += page.get_text()
+        blocks = page.get_text("blocks")  # IMPORTANT upgrade
 
-    return text
+        for b in blocks:
+            text_blocks.append(b[4])  # text content only
+
+    return "\n".join(text_blocks)
