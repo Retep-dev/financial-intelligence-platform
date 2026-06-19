@@ -1,5 +1,6 @@
 fastapi
 uvicorn[standard]
+httpx
 
 sqlalchemy
 psycopg2-binary
@@ -14,6 +15,9 @@ python-multipart
 redis
 celery
 
+qdrant-client
+
 loguru
 
 pytest
+pytest-asyncio

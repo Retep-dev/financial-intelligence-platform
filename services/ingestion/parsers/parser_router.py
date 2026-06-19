@@ -1,18 +1,20 @@
+import re
 from pathlib import Path
 from services.ingestion.parsers.pdf_parser import extract_pdf_text
 from services.ingestion.preprocessing.text_cleaner import clean_text
 from services.ingestion.preprocessing.structure_fix import fix_structure
+from services.ingestion.preprocessing.layout_normalizer import normalize_layout
 
 
 def extract_text(file_path: str) -> str:
 
     extension = Path(file_path).suffix.lower()
-
     if extension == ".pdf":
-        raw = extract_pdf_text(file_path)
-        clean = clean_text(raw)
-        final = fix_structure(clean)
-        return final
+        return extract_pdf_text(file_path)
+
+        clean = re.sub(r"\s+", " ", raw)
+
+        return clean
 
     elif extension in [".docx", ".doc"]:
         return "DOCX parsing not implemented yet"

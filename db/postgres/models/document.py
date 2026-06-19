@@ -1,14 +1,18 @@
 import uuid
-
 from datetime import datetime
+from enum import Enum as PyEnum
 
-from sqlalchemy import String
-from sqlalchemy import DateTime
-
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
+from sqlalchemy import String, DateTime, Integer
+from sqlalchemy.orm import Mapped, mapped_column
 
 from db.postgres.base import Base
+
+
+class DocumentStatus(str, PyEnum):
+    PENDING = "pending"
+    PROCESSING = "processing"
+    PROCESSED = "processed"
+    FAILED = "failed"
 
 
 class Document(Base):
@@ -33,6 +37,22 @@ class Document(Base):
         default="manual_upload"
     )
 
+    analyst_id: Mapped[str] = mapped_column(
+        String,
+        nullable=True
+    )
+
+    page_count: Mapped[int] = mapped_column(
+        Integer,
+        nullable=True
+    )
+
+    status: Mapped[str] = mapped_column(
+        String,
+        default=DocumentStatus.PENDING.value,
+        nullable=False
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.utcnow
@@ -40,5 +60,6 @@ class Document(Base):
 
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
     )
