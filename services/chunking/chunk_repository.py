@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from db.postgres.models.chunk import Chunk, ChunkStatus
 
@@ -20,8 +20,8 @@ def save_chunks(db, document_id, chunks):
             token_count=chunk.get("token_count"),
             embedding_id=chunk.get("embedding_id"),
             status=chunk.get("status", ChunkStatus.PENDING.value),
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
 
         db.add(db_chunk)

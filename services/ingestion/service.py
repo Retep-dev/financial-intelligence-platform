@@ -1,5 +1,5 @@
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 from db.postgres.models.document import Document, DocumentStatus
 from db.postgres.session import SessionLocal
@@ -23,8 +23,8 @@ def create_document_record(
             source=source,
             analyst_id=analyst_id,
             status=DocumentStatus.PENDING.value,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
 
         db.add(document)
@@ -49,7 +49,7 @@ def update_document_status(
 
         if document:
             document.status = status.value
-            document.updated_at = datetime.utcnow()
+            document.updated_at = datetime.now(timezone.utc)
 
             if page_count is not None:
                 document.page_count = page_count

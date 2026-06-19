@@ -16,6 +16,7 @@ redis
 celery
 
 qdrant-client
+openai
 
 # Document parsing
 PyMuPDF
