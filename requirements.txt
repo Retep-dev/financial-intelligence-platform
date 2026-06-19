@@ -17,6 +17,16 @@ celery
 
 qdrant-client
 
+# Document parsing
+PyMuPDF
+python-docx
+openpyxl
+pandas
+beautifulsoup4
+lxml
+pytesseract
+Pillow
+
 loguru
 
 pytest

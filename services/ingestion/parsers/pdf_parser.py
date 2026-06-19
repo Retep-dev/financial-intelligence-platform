@@ -1,14 +1,14 @@
 import fitz
 
+from services.ingestion.preprocessing.ocr import ocr_pdf
+
 
 def extract_pdf_text(file_path: str) -> str:
-
     doc = fitz.open(file_path)
 
     full_text = []
 
     for page in doc:
-
         blocks = page.get_text("blocks")
 
         # sort reading order
@@ -27,4 +27,14 @@ def extract_pdf_text(file_path: str) -> str:
 
         full_text.append(" ".join(page_text))
 
-    return "\n".join(full_text)
+    doc.close()
+
+    extracted = "\n".join(full_text)
+
+    # OCR fallback for scanned PDFs or very low text content
+    if len(extracted.strip()) < 100:
+        ocr_text = ocr_pdf(file_path)
+        if ocr_text:
+            return ocr_text
+
+    return extracted

@@ -25,7 +25,7 @@ services:
       - "6379:6379"
 
   qdrant:
-    image: qdrant/qdrant:v1.9.0
+    image: qdrant/qdrant:v1.18.0
 
     container_name: financial_qdrant
 
