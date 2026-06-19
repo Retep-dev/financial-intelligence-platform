@@ -20,6 +20,16 @@ def test_health_qdrant(client):
     data = response.json()
     assert data["status"] == "healthy"
     assert data["component"] == "qdrant"
+    assert data["collection_valid"] is True
+
+
+def test_health_metrics(client):
+    response = client.get("/health/metrics")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "healthy"
+    assert "qdrant" in data
+    assert data["qdrant"]["collection"] == "financial_chunks"
 
 
 def test_root(client):
