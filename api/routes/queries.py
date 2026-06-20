@@ -2,8 +2,15 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from api.dependencies.db import get_db
-from api.schemas.query import SearchRequest, SearchResponse, SearchResult
+from api.schemas.query import (
+    SearchRequest,
+    SearchResponse,
+    SearchResult,
+    AskRequest,
+    AskResponse
+)
 from services.retrieval.hybrid_search import hybrid_search
+from services.retrieval.ask import ask_question
 
 router = APIRouter(
     prefix="/queries",
@@ -42,3 +49,16 @@ def search_chunks(request: SearchRequest, db: Session = Depends(get_db)):
         reranked_count=result["reranked_count"],
         results=results
     )
+
+
+@router.post("/ask", response_model=AskResponse)
+def ask(request: AskRequest, db: Session = Depends(get_db)):
+    result = ask_question(
+        db=db,
+        query=request.query,
+        top_k=request.top_k,
+        top_n=request.top_n,
+        use_llm=request.use_llm
+    )
+
+    return AskResponse(**result)

@@ -26,3 +26,27 @@ class SearchResponse(BaseModel):
     bm25_count: int
     reranked_count: int
     results: List[SearchResult]
+
+
+class AskRequest(BaseModel):
+    query: str
+    top_k: Optional[int] = 50
+    top_n: Optional[int] = 10
+    use_llm: Optional[bool] = True
+
+
+class Citation(BaseModel):
+    chunk_id: str
+    document_id: str
+    document_name: str
+    page_number: Optional[int] = None
+    section: Optional[str] = None
+    text: Optional[str] = None
+
+
+class AskResponse(BaseModel):
+    query: str
+    answer: str
+    citations: List[Citation]
+    citation_texts: List[str]
+    retrieval_metadata: dict
