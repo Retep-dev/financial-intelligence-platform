@@ -23,6 +23,15 @@ class Settings(BaseSettings):
 
     EMBEDDING_DIMENSIONS: int = 1024
 
+    # Generation provider: "openai" or "nvidia"
+    GENERATION_PROVIDER: str = "nvidia"
+
+    # OpenAI generation
+    OPENAI_GENERATION_MODEL: str = "gpt-4o-mini"
+
+    # NVIDIA generation
+    NVIDIA_GENERATION_MODEL: str = "meta/llama-3.1-70b-instruct"
+
     model_config = SettingsConfigDict(env_file=".env")
 
 

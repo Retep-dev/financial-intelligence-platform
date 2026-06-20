@@ -4,6 +4,7 @@ from fastapi import FastAPI
 
 from api.routes.document_routes import router as document_router
 from api.routes.health import router as health_router
+from api.routes.queries import router as query_router
 from db.qdrant.collections import ensure_collection_exists, validate_collection
 
 
@@ -28,6 +29,7 @@ app = FastAPI(
 
 app.include_router(health_router)
 app.include_router(document_router)
+app.include_router(query_router)
 
 
 @app.get("/")
