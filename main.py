@@ -1,6 +1,9 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from starlette.responses import FileResponse
 
 from api.routes.document_routes import router as document_router
 from api.routes.health import router as health_router
@@ -31,6 +34,9 @@ app.include_router(health_router)
 app.include_router(document_router)
 app.include_router(query_router)
 
+frontend_dir = Path(__file__).parent / "frontend"
+app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+
 
 @app.get("/")
 def root():
@@ -38,3 +44,8 @@ def root():
         "status": "running",
         "service": "financial-intelligence-platform"
     }
+
+
+@app.get("/app")
+def serve_app():
+    return FileResponse(frontend_dir / "index.html")
