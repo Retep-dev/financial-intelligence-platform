@@ -4,7 +4,8 @@ from pydantic import BaseModel
 
 class SearchRequest(BaseModel):
     query: str
-    top_k: Optional[int] = 10
+    top_k: Optional[int] = 50
+    top_n: Optional[int] = 10
     use_llm: Optional[bool] = True
 
 
@@ -23,4 +24,5 @@ class SearchResponse(BaseModel):
     enhanced_query: dict
     dense_count: int
     bm25_count: int
+    reranked_count: int
     results: List[SearchResult]

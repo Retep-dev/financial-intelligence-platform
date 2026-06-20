@@ -17,6 +17,7 @@ def search_chunks(request: SearchRequest, db: Session = Depends(get_db)):
         db=db,
         query=request.query,
         top_k=request.top_k,
+        top_n=request.top_n,
         use_llm=request.use_llm
     )
 
@@ -38,5 +39,6 @@ def search_chunks(request: SearchRequest, db: Session = Depends(get_db)):
         enhanced_query=result["enhanced_query"],
         dense_count=result["dense_count"],
         bm25_count=result["bm25_count"],
+        reranked_count=result["reranked_count"],
         results=results
     )

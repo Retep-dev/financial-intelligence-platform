@@ -17,6 +17,7 @@ celery
 
 qdrant-client
 openai
+cohere
 
 # Document parsing
 PyMuPDF

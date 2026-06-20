@@ -6,15 +6,17 @@ from services.retrieval.query_enhancer import enhance_query
 from services.retrieval.dense_search import dense_search
 from services.retrieval.bm25_search import bm25_search
 from services.retrieval.fusion import reciprocal_rank_fusion
+from services.reranking.reranker import rerank_chunks
 
 
 def hybrid_search(
     db: Session,
     query: str,
     top_k: int = 50,
+    top_n: int = 10,
     use_llm: bool = True
 ) -> Dict:
-    """Run hybrid retrieval: query enhancement → dense + BM25 → RRF fusion."""
+    """Run hybrid retrieval: query enhancement → dense + BM25 → RRF fusion → rerank."""
     enhanced = enhance_query(query, use_llm=use_llm)
 
     retrieval_queries = enhanced["retrieval_queries"]
@@ -40,10 +42,18 @@ def hybrid_search(
         top_n=top_k
     )
 
+    # Rerank top-K fused results to return top-N
+    reranked = rerank_chunks(
+        query=enhanced["rewritten"],
+        chunks=fused,
+        top_n=top_n
+    )
+
     return {
         "original_query": query,
         "enhanced_query": enhanced,
         "dense_count": len(dense_results),
         "bm25_count": len(bm25_results),
-        "results": fused
+        "reranked_count": len(reranked),
+        "results": reranked
     }

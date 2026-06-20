@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     # NVIDIA generation
     NVIDIA_GENERATION_MODEL: str = "meta/llama-3.1-70b-instruct"
 
+    # Reranker
+    COHERE_API_KEY: str | None = None
+    COHERE_RERANK_MODEL: str = "rerank-v3.5"
+
     model_config = SettingsConfigDict(env_file=".env")
 
 
