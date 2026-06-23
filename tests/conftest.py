@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from main import app
+from financial_intelligence_platform.main import app
 
 
 @pytest.fixture(scope="module")

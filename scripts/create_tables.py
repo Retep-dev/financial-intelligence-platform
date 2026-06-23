@@ -1,12 +1,7 @@
-import sys
-from pathlib import Path
+from financial_intelligence_platform.db.postgres.base import Base
+from financial_intelligence_platform.db.postgres.database import engine
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
-from db.postgres.base import Base
-from db.postgres.database import engine
-
-import db.postgres.models
+import financial_intelligence_platform.db.postgres.models
 
 Base.metadata.create_all(bind=engine)
 

@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from services.retrieval.query_enhancer import enhance_query, expand_abbreviations
+from financial_intelligence_platform.services.retrieval.query_enhancer import enhance_query, expand_abbreviations
 
 
 def test_expand_abbreviations():
@@ -23,7 +23,7 @@ def test_enhance_query_without_llm():
 def test_enhance_query_with_llm():
     mock_response = '{"rewritten": "What was the total revenue?", "retrieval_queries": ["What was the total revenue?", "revenue amount"]}'
 
-    with patch("services.retrieval.query_enhancer.generate_text") as mock_generate:
+    with patch("financial_intelligence_platform.services.retrieval.query_enhancer.generate_text") as mock_generate:
         mock_generate.return_value = mock_response
 
         result = enhance_query("revenue?", use_llm=True)

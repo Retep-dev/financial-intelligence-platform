@@ -1,8 +1,8 @@
-from db.postgres.models import Document
-from db.postgres.session import SessionLocal
+from financial_intelligence_platform.db.postgres.models import Document
+from financial_intelligence_platform.db.postgres.session import SessionLocal
 
-from services.ingestion.parsers.parser_router import extract_text
-from services.chunking.chunker import split_into_chunks
+from financial_intelligence_platform.services.ingestion.parsers.parser_router import extract_text
+from financial_intelligence_platform.services.chunking.chunker import split_into_chunks
 
 db = SessionLocal()
 

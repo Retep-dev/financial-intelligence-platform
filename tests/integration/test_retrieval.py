@@ -5,17 +5,17 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
-from main import app
-from db.postgres.session import SessionLocal
-from db.postgres.models.chunk import Chunk
-from db.qdrant.client import get_qdrant_client
-from db.qdrant.collections import COLLECTION_NAME
-from db.qdrant.queries import upsert_chunks
-from services.ingestion.service import create_document_record
-from services.embeddings.client import get_embedding_dimensions
-from services.retrieval.dense_search import dense_search
-from services.retrieval.bm25_search import bm25_search
-from services.retrieval.hybrid_search import hybrid_search
+from financial_intelligence_platform.main import app
+from financial_intelligence_platform.db.postgres.session import SessionLocal
+from financial_intelligence_platform.db.postgres.models.chunk import Chunk
+from financial_intelligence_platform.db.qdrant.client import get_qdrant_client
+from financial_intelligence_platform.db.qdrant.collections import COLLECTION_NAME
+from financial_intelligence_platform.db.qdrant.queries import upsert_chunks
+from financial_intelligence_platform.services.ingestion.service import create_document_record
+from financial_intelligence_platform.services.embeddings.client import get_embedding_dimensions
+from financial_intelligence_platform.services.retrieval.dense_search import dense_search
+from financial_intelligence_platform.services.retrieval.bm25_search import bm25_search
+from financial_intelligence_platform.services.retrieval.hybrid_search import hybrid_search
 
 
 client = TestClient(app)
@@ -39,7 +39,7 @@ def test_dense_search():
     upsert_chunks(chunks)
 
     try:
-        with patch("services.retrieval.dense_search.generate_embeddings") as mock_embed:
+        with patch("financial_intelligence_platform.services.retrieval.dense_search.generate_embeddings") as mock_embed:
             mock_embed.return_value = [[1.0] + [0.0] * (vector_size - 1)]
 
             results = dense_search("Revenue increased")
@@ -111,8 +111,8 @@ def test_hybrid_search():
             "source": "manual_upload"
         }])
 
-        with patch("services.retrieval.hybrid_search.dense_search") as mock_dense, \
-             patch("services.retrieval.hybrid_search.bm25_search") as mock_bm25:
+        with patch("financial_intelligence_platform.services.retrieval.hybrid_search.dense_search") as mock_dense, \
+             patch("financial_intelligence_platform.services.retrieval.hybrid_search.bm25_search") as mock_bm25:
 
             mock_dense.return_value = [{
                 "chunk_id": chunk_id,

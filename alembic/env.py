@@ -5,9 +5,9 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from core.config.settings import settings
-from db.postgres.base import Base
-import db.postgres.models  # noqa: F401
+from financial_intelligence_platform.core.config.settings import settings
+from financial_intelligence_platform.db.postgres.base import Base
+import financial_intelligence_platform.db.postgres.models  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

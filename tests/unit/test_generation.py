@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from services.generation.generator import generate_answer
-from services.generation.response_parser import (
+from financial_intelligence_platform.services.generation.generator import generate_answer
+from financial_intelligence_platform.services.generation.response_parser import (
     extract_citation_markers,
     normalize_citation_text
 )
@@ -18,7 +18,7 @@ def test_generate_answer():
         }
     ]
 
-    with patch("services.generation.generator.generate_text") as mock_generate:
+    with patch("financial_intelligence_platform.services.generation.generator.generate_text") as mock_generate:
         mock_generate.return_value = "Revenue increased by 12% [citation: chunk-abc]."
 
         answer = generate_answer("What was revenue?", chunks)

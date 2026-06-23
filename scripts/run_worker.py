@@ -1,4 +1,4 @@
-from workers.celery_app import celery_app
+from financial_intelligence_platform.workers.celery_app import celery_app
 
 
 if __name__ == "__main__":

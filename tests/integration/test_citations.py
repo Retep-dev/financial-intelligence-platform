@@ -1,11 +1,11 @@
 import uuid
 
-from db.postgres.session import SessionLocal
-from db.postgres.models.document import Document
-from db.postgres.models.chunk import Chunk
+from financial_intelligence_platform.db.postgres.session import SessionLocal
+from financial_intelligence_platform.db.postgres.models.document import Document
+from financial_intelligence_platform.db.postgres.models.chunk import Chunk
 
-from services.ingestion.service import create_document_record
-from services.citations.builder import build_citations
+from financial_intelligence_platform.services.ingestion.service import create_document_record
+from financial_intelligence_platform.services.citations.builder import build_citations
 
 
 def test_build_citations():

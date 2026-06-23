@@ -1,6 +1,6 @@
-from services.ingestion.preprocessing.date_normalizer import normalize_dates
-from services.ingestion.preprocessing.currency_normalizer import normalize_currencies
-from services.ingestion.preprocessing.numeric_normalizer import normalize_numbers
+from financial_intelligence_platform.services.ingestion.preprocessing.date_normalizer import normalize_dates
+from financial_intelligence_platform.services.ingestion.preprocessing.currency_normalizer import normalize_currencies
+from financial_intelligence_platform.services.ingestion.preprocessing.numeric_normalizer import normalize_numbers
 
 
 def test_normalize_dates_us_format():

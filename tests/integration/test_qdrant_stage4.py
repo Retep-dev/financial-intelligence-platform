@@ -2,18 +2,18 @@ import uuid
 
 import pytest
 
-from db.qdrant.client import get_qdrant_client
-from db.qdrant.collections import (
+from financial_intelligence_platform.db.qdrant.client import get_qdrant_client
+from financial_intelligence_platform.db.qdrant.collections import (
     ensure_collection_exists,
     delete_collection,
     validate_collection,
     get_collection_info,
     COLLECTION_NAME
 )
-from db.qdrant.queries import upsert_chunks, delete_document_chunks
-from db.qdrant.metrics import get_collection_stats, count_document_chunks
-from db.qdrant.snapshots import create_snapshot, list_snapshots, delete_snapshot
-from services.embeddings.client import get_embedding_dimensions
+from financial_intelligence_platform.db.qdrant.queries import upsert_chunks, delete_document_chunks
+from financial_intelligence_platform.db.qdrant.metrics import get_collection_stats, count_document_chunks
+from financial_intelligence_platform.db.qdrant.snapshots import create_snapshot, list_snapshots, delete_snapshot
+from financial_intelligence_platform.services.embeddings.client import get_embedding_dimensions
 
 
 @pytest.fixture(scope="module", autouse=True)

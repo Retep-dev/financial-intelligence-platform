@@ -3,13 +3,13 @@ import tempfile
 import uuid
 from unittest.mock import patch
 
-from db.postgres.session import SessionLocal
-from db.postgres.models.document import Document, DocumentStatus
-from db.postgres.models.chunk import Chunk
+from financial_intelligence_platform.db.postgres.session import SessionLocal
+from financial_intelligence_platform.db.postgres.models.document import Document, DocumentStatus
+from financial_intelligence_platform.db.postgres.models.chunk import Chunk
 
-from services.ingestion.service import create_document_record
-from services.embeddings.client import get_embedding_dimensions
-from workers.tasks.document_processing import process_document
+from financial_intelligence_platform.services.ingestion.service import create_document_record
+from financial_intelligence_platform.services.embeddings.client import get_embedding_dimensions
+from financial_intelligence_platform.workers.tasks.document_processing import process_document
 
 
 def test_process_document_end_to_end():
@@ -29,7 +29,7 @@ def test_process_document_end_to_end():
     vector_size = get_embedding_dimensions()
 
     try:
-        with patch("workers.tasks.document_processing.generate_chunk_embeddings") as mock_embed:
+        with patch("financial_intelligence_platform.workers.tasks.document_processing.generate_chunk_embeddings") as mock_embed:
             mock_embed.return_value = [
                 {
                     "chunk_id": chunk_id_1,

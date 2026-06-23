@@ -1,4 +1,4 @@
-from db.qdrant.snapshots import list_snapshots
+from financial_intelligence_platform.db.qdrant.snapshots import list_snapshots
 
 
 if __name__ == "__main__":

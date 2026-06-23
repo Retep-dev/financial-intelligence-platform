@@ -5,12 +5,12 @@ import pytest
 from docx import Document
 from openpyxl import Workbook
 
-from services.ingestion.parsers.parser_router import extract_text
-from services.ingestion.parsers.txt_parser import extract_txt_text
-from services.ingestion.parsers.csv_parser import extract_csv_text
-from services.ingestion.parsers.docx_parser import extract_docx_text
-from services.ingestion.parsers.xlsx_parser import extract_xlsx_text
-from services.ingestion.parsers.html_parser import extract_html_text
+from financial_intelligence_platform.services.ingestion.parsers.parser_router import extract_text
+from financial_intelligence_platform.services.ingestion.parsers.txt_parser import extract_txt_text
+from financial_intelligence_platform.services.ingestion.parsers.csv_parser import extract_csv_text
+from financial_intelligence_platform.services.ingestion.parsers.docx_parser import extract_docx_text
+from financial_intelligence_platform.services.ingestion.parsers.xlsx_parser import extract_xlsx_text
+from financial_intelligence_platform.services.ingestion.parsers.html_parser import extract_html_text
 
 
 def test_extract_txt_text():

@@ -1,6 +1,6 @@
 from unittest.mock import patch, MagicMock
 
-from services.embeddings.generator import generate_embeddings, generate_chunk_embeddings
+from financial_intelligence_platform.services.embeddings.generator import generate_embeddings, generate_chunk_embeddings
 
 
 def test_generate_embeddings():
@@ -10,7 +10,7 @@ def test_generate_embeddings():
         MagicMock(embedding=[0.4, 0.5, 0.6]),
     ]
 
-    with patch("services.embeddings.generator.get_embedding_client") as mock_client:
+    with patch("financial_intelligence_platform.services.embeddings.generator.get_embedding_client") as mock_client:
         mock_client.return_value.embeddings.create.return_value = mock_response
 
         embeddings = generate_embeddings(["hello", "world"])
@@ -26,7 +26,7 @@ def test_generate_chunk_embeddings():
         MagicMock(embedding=[0.1, 0.2, 0.3]),
     ]
 
-    with patch("services.embeddings.generator.get_embedding_client") as mock_client:
+    with patch("financial_intelligence_platform.services.embeddings.generator.get_embedding_client") as mock_client:
         mock_client.return_value.embeddings.create.return_value = mock_response
 
         chunks = [{"text": "Revenue increased."}]

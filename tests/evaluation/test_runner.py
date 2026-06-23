@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock
 
-from services.evaluation.models import EvaluationExample
-from services.evaluation.runner import evaluate_example, run_evaluation
+from financial_intelligence_platform.services.evaluation.models import EvaluationExample
+from financial_intelligence_platform.services.evaluation.runner import evaluate_example, run_evaluation
 
 
 def test_evaluate_example():
@@ -24,9 +24,9 @@ def test_evaluate_example():
         ]
     }
 
-    with patch("services.evaluation.runner.ask_question", return_value=mock_ask_result), \
-         patch("services.evaluation.runner.hybrid_search", return_value=mock_retrieval_result), \
-         patch("services.evaluation.runner.detect_hallucination", return_value=False):
+    with patch("financial_intelligence_platform.services.evaluation.runner.ask_question", return_value=mock_ask_result), \
+         patch("financial_intelligence_platform.services.evaluation.runner.hybrid_search", return_value=mock_retrieval_result), \
+         patch("financial_intelligence_platform.services.evaluation.runner.detect_hallucination", return_value=False):
 
         result = evaluate_example(
             db=MagicMock(),
@@ -73,7 +73,7 @@ def test_run_evaluation():
         }
     ]
 
-    with patch("services.evaluation.runner.evaluate_example", side_effect=mock_results):
+    with patch("financial_intelligence_platform.services.evaluation.runner.evaluate_example", side_effect=mock_results):
         report = run_evaluation(
             db=MagicMock(),
             examples=examples,

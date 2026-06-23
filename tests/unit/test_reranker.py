@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-from services.reranking.reranker import rerank_chunks
+from financial_intelligence_platform.services.reranking.reranker import rerank_chunks
 
 
 def test_rerank_chunks_fallback_without_api_key():
@@ -9,7 +9,7 @@ def test_rerank_chunks_fallback_without_api_key():
         {"chunk_id": "2", "score": 0.8, "payload": {"text": "Profit increased."}},
     ]
 
-    with patch("services.reranking.reranker.settings.COHERE_API_KEY", None):
+    with patch("financial_intelligence_platform.services.reranking.reranker.settings.COHERE_API_KEY", None):
         result = rerank_chunks("revenue", chunks, top_n=2)
 
     assert len(result) == 2
@@ -28,7 +28,7 @@ def test_rerank_chunks_with_cohere():
         MagicMock(index=0, relevance_score=0.85),
     ]
 
-    with patch("services.reranking.reranker.get_cohere_client") as mock_client:
+    with patch("financial_intelligence_platform.services.reranking.reranker.get_cohere_client") as mock_client:
         mock_client.return_value.rerank.return_value = mock_response
 
         result = rerank_chunks("revenue", chunks, top_n=2)

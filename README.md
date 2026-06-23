@@ -11,7 +11,7 @@ A Retrieval-Augmented Generation (RAG) platform for extracting insights from doc
 - **Document ingestion** — Supports PDF, DOCX, TXT, CSV, and XLSX.
 - **OCR fallback** — Automatically runs Tesseract OCR on scanned/image-based PDFs when embedded text is sparse.
 - **Hybrid retrieval** — Combines dense vector search (Qdrant) with BM25-style full-text search (PostgreSQL) and reciprocal rank fusion.
-- **Re-ranking** — Optional Cohere reranker for improved result ordering.
+- **Re-ranking** — Cohere reranker for improved result ordering.
 - **Grounded answers** — LLM-generated answers with citation markers linked back to source chunks.
 - **Web UI** — Clean, responsive frontend at `/app` for drag-and-drop upload and chat.
 - **REST API** — Full OpenAPI/Swagger documentation at `/docs`.
@@ -28,9 +28,9 @@ A Retrieval-Augmented Generation (RAG) platform for extracting insights from doc
 | Database | PostgreSQL 16 |
 | Vector Store | Qdrant |
 | Task Queue | Redis + Celery |
-| Embeddings | OpenAI or NVIDIA NIM |
-| Generation | OpenAI or NVIDIA NIM |
-| Reranking | Cohere (optional) |
+| Embeddings | NVIDIA NIM (`nvidia/nv-embedqa-e5-v5`) |
+| Generation | NVIDIA NIM (`meta/llama-3.1-70b-instruct`) |
+| Reranking | Cohere (`rerank-v3.5`) |
 | OCR | Tesseract + pytesseract + PyMuPDF |
 | Frontend | Vanilla HTML/CSS/JS |
 | Testing | pytest |
@@ -75,57 +75,80 @@ A Retrieval-Augmented Generation (RAG) platform for extracting insights from doc
 
 - Python 3.12+
 - Docker + Docker Compose
-- (Optional but recommended for scanned PDFs) [Tesseract OCR](https://github.com/tesseract-ocr/tesseract)
+- NVIDIA API key (for embeddings and generation)
+- [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) (for scanned/image-based PDFs)
 
-### 1. Clone and create the virtual environment
+> **Note:** OpenAI can be used instead of NVIDIA NIM by changing `EMBEDDING_PROVIDER` and `GENERATION_PROVIDER` to `openai` and providing an `OPENAI_API_KEY`. The default setup described here uses NVIDIA NIM.
+
+### 1. Clone the repository
 
 ```bash
+git clone https://github.com/Retep-dev/financial-intelligence-platform.git
 cd financial-intelligence-platform
-python -m venv venv
 ```
 
-On Windows PowerShell:
+### 2. Create and activate a virtual environment
+
+**Windows PowerShell:**
 
 ```powershell
+python -m venv venv
 venv\Scripts\Activate.ps1
 ```
 
-On Linux/macOS/Git Bash:
+If you get an execution-policy error, run once as administrator:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+**Git Bash / Linux / macOS:**
 
 ```bash
+python -m venv venv
 source venv/bin/activate
 ```
 
-### 2. Install dependencies
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configure environment variables
+### 4. Install the package in editable mode
 
-Create a `.env` file in the project root:
+```bash
+pip install -e .
+```
+
+This registers the `financial_intelligence_platform` package so all scripts and tests can import it correctly.
+
+### 5. Configure environment variables
+
+Create a `.env` file in the project root with your NVIDIA API key:
 
 ```env
 DATABASE_URL=postgresql://postgres:password@localhost:5432/financial_intelligence
 REDIS_URL=redis://localhost:6379/0
 QDRANT_URL=http://localhost:6333
 
-# Embedding provider: openai or nvidia
+# NVIDIA NIM (default)
 EMBEDDING_PROVIDER=nvidia
 EMBEDDING_DIMENSIONS=1024
+NVIDIA_API_KEY=your-nvidia-api-key
+NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
+NVIDIA_EMBEDDING_MODEL=nvidia/nv-embedqa-e5-v5
 
-OPENAI_API_KEY=your-openai-key
-NVIDIA_API_KEY=your-nvidia-key
-
-# Generation provider: openai or nvidia
 GENERATION_PROVIDER=nvidia
+NVIDIA_GENERATION_MODEL=meta/llama-3.1-70b-instruct
 
-# Optional reranker
-COHERE_API_KEY=your-cohere-key
+# Cohere reranker
+COHERE_API_KEY=your-cohere-api-key
 ```
 
-### 4. Start infrastructure services
+Replace `your-nvidia-api-key` with your actual key from [build.nvidia.com](https://build.nvidia.com).
+
+### 6. Start infrastructure services
 
 ```bash
 docker-compose up -d
@@ -133,7 +156,7 @@ docker-compose up -d
 
 This starts PostgreSQL, Redis, and Qdrant.
 
-### 5. Create database tables
+### 7. Create database tables
 
 On Windows PowerShell:
 
@@ -147,27 +170,27 @@ On Linux/macOS/Git Bash:
 python scripts/create_tables.py
 ```
 
-### 6. Start the API server
+### 8. Start the API server
 
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 8000
+uvicorn financial_intelligence_platform.main:app --host 0.0.0.0 --port 8000
 ```
 
-### 7. Start the Celery worker
+### 9. Start the Celery worker
 
 In a second terminal:
 
 ```bash
 # PowerShell
 venv\Scripts\Activate.ps1
-celery -A workers.celery_app.celery_app worker --loglevel=info -P solo
+celery -A financial_intelligence_platform.workers.celery_app.celery_app worker --loglevel=info -P solo
 
 # Git Bash
 source venv/Scripts/activate
-celery -A workers.celery_app.celery_app worker --loglevel=info -P solo
+celery -A financial_intelligence_platform.workers.celery_app.celery_app worker --loglevel=info -P solo
 ```
 
-### 8. Open the app
+### 10. Open the app
 
 - **Web UI:** http://localhost:8000/app
 - **API docs:** http://localhost:8000/docs
@@ -271,44 +294,48 @@ pytest tests/integration -v
 
 ```
 financial-intelligence-platform/
-├── api/                    # FastAPI routers, schemas, dependencies
-│   ├── dependencies/
-│   ├── routes/
-│   └── schemas/
-├── core/                   # Configuration and logging
-│   └── config/
-├── db/                     # Database clients and models
-│   ├── postgres/
-│   └── qdrant/
-├── docker/                 # Docker-related files
-├── docs/                   # Documentation
-├── frontend/               # Web UI (HTML/CSS/JS)
+├── src/
+│   └── financial_intelligence_platform/   # Application package
+│       ├── main.py                        # FastAPI entry point
+│       ├── api/                           # FastAPI routers, schemas, dependencies
+│       │   ├── dependencies/
+│       │   ├── routes/
+│       │   └── schemas/
+│       ├── core/                          # Configuration and logging
+│       │   └── config/
+│       ├── db/                            # Database clients and models
+│       │   ├── postgres/
+│       │   └── qdrant/
+│       ├── services/                      # Business logic
+│       │   ├── chunking/
+│       │   ├── citations/
+│       │   ├── embeddings/
+│       │   ├── evaluation/
+│       │   ├── generation/
+│       │   ├── ingestion/
+│       │   ├── preprocessing/
+│       │   ├── reranking/
+│       │   └── retrieval/
+│       └── workers/                       # Celery workers
+│           ├── celery_app.py
+│           └── tasks/
+├── alembic/                               # Database migrations
+├── docker/                                # Docker-related files
+├── docs/                                  # Documentation
+├── frontend/                              # Web UI (HTML/CSS/JS)
 │   ├── css/
 │   ├── js/
 │   └── index.html
-├── scripts/                # Utility scripts
+├── scripts/                               # Utility scripts
 │   ├── create_tables.py
 │   └── ...
-├── services/               # Business logic
-│   ├── chunking/
-│   ├── citations/
-│   ├── embeddings/
-│   ├── evaluation/
-│   ├── generation/
-│   ├── ingestion/
-│   ├── preprocessing/
-│   ├── reranking/
-│   └── retrieval/
-├── storage/uploads/        # Uploaded files
-├── tests/                  # Test suite
+├── storage/uploads/                       # Uploaded files
+├── tests/                                 # Test suite
 │   ├── evaluation/
 │   ├── integration/
 │   └── unit/
-├── workers/                # Celery workers
-│   ├── celery_app.py
-│   └── tasks/
 ├── docker-compose.yml
-├── main.py                 # FastAPI application entry point
+├── pyproject.toml
 ├── requirements.txt
 └── README.md
 ```
@@ -331,22 +358,22 @@ financial-intelligence-platform/
 | `GENERATION_PROVIDER` | `openai` or `nvidia` | `nvidia` |
 | `OPENAI_GENERATION_MODEL` | OpenAI chat model | `gpt-4o-mini` |
 | `NVIDIA_GENERATION_MODEL` | NVIDIA chat model | `meta/llama-3.1-70b-instruct` |
-| `COHERE_API_KEY` | Optional Cohere reranker key | — |
+| `COHERE_API_KEY` | Cohere reranker key | — |
 | `COHERE_RERANK_MODEL` | Cohere rerank model | `rerank-v3.5` |
 
 ---
 
 ## Troubleshooting
 
-### `ModuleNotFoundError: No module named 'db'` when running scripts
+### `ModuleNotFoundError: No module named 'financial_intelligence_platform'` when running scripts
 
-The script path is added to `sys.path` instead of the project root. Run as a module:
+The package is not installed or not on `PYTHONPATH`. Run:
 
 ```bash
-python -m scripts.create_tables
+pip install -e .
 ```
 
-or use the updated `scripts/create_tables.py` which adds the project root automatically.
+Then try the script again.
 
 ### Upload succeeds but the answer says “I do not have enough information”
 

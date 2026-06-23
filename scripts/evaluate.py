@@ -1,8 +1,8 @@
 import json
 
-from db.postgres.session import SessionLocal
-from services.evaluation.models import EvaluationExample
-from services.evaluation.runner import run_evaluation
+from financial_intelligence_platform.db.postgres.session import SessionLocal
+from financial_intelligence_platform.services.evaluation.models import EvaluationExample
+from financial_intelligence_platform.services.evaluation.runner import run_evaluation
 
 
 # Example evaluation dataset

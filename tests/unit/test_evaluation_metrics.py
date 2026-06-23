@@ -1,4 +1,4 @@
-from services.evaluation.metrics import (
+from financial_intelligence_platform.services.evaluation.metrics import (
     recall_at_k,
     precision_at_k,
     citation_accuracy,

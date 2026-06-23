@@ -2,15 +2,15 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
-from main import app
+from financial_intelligence_platform.main import app
 
 client = TestClient(app)
 
 
 def test_ask_endpoint():
-    with patch("services.retrieval.ask.generate_answer") as mock_answer, \
-         patch("services.retrieval.ask.hybrid_search") as mock_search, \
-         patch("services.retrieval.ask.build_citations") as mock_citations:
+    with patch("financial_intelligence_platform.services.retrieval.ask.generate_answer") as mock_answer, \
+         patch("financial_intelligence_platform.services.retrieval.ask.hybrid_search") as mock_search, \
+         patch("financial_intelligence_platform.services.retrieval.ask.build_citations") as mock_citations:
 
         chunk_id = "chunk-test-123"
 

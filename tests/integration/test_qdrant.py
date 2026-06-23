@@ -2,10 +2,10 @@ import uuid
 
 import pytest
 
-from db.qdrant.client import get_qdrant_client
-from db.qdrant.collections import ensure_collection_exists, delete_collection, COLLECTION_NAME
-from db.qdrant.queries import upsert_chunks, delete_document_chunks
-from services.embeddings.client import get_embedding_dimensions
+from financial_intelligence_platform.db.qdrant.client import get_qdrant_client
+from financial_intelligence_platform.db.qdrant.collections import ensure_collection_exists, delete_collection, COLLECTION_NAME
+from financial_intelligence_platform.db.qdrant.queries import upsert_chunks, delete_document_chunks
+from financial_intelligence_platform.services.embeddings.client import get_embedding_dimensions
 
 
 @pytest.fixture(scope="module", autouse=True)
