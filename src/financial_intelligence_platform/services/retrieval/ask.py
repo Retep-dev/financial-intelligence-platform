@@ -6,6 +6,26 @@ from financial_intelligence_platform.services.generation.generator import genera
 from financial_intelligence_platform.services.generation.response_parser import extract_citation_markers, normalize_citation_text
 from financial_intelligence_platform.services.citations.builder import build_citations
 from financial_intelligence_platform.services.citations.formatter import format_citations
+from financial_intelligence_platform.services.evaluation.hallucination import detect_hallucination
+
+
+def _build_context(chunks: List[Dict]) -> str:
+    parts = []
+    for chunk in chunks:
+        payload = chunk.get("payload", {})
+        text = payload.get("text", "").strip()
+        if text:
+            parts.append(text)
+    return "\n\n".join(parts)
+
+
+def _filter_invalid_citations(
+    answer: str,
+    citation_chunk_ids: List[str],
+    retrieved_chunks: List[Dict]
+) -> List[str]:
+    valid_ids = {chunk["chunk_id"] for chunk in retrieved_chunks}
+    return [cid for cid in citation_chunk_ids if cid in valid_ids]
 
 
 def ask_question(
@@ -40,8 +60,28 @@ def ask_question(
         }
 
     answer = generate_answer(query, chunks)
-    chunk_ids = extract_citation_markers(answer)
-    citations = build_citations(db, chunk_ids)
+
+    # Validate that cited chunks were actually retrieved.
+    raw_chunk_ids = extract_citation_markers(answer)
+    valid_chunk_ids = _filter_invalid_citations(answer, raw_chunk_ids, chunks)
+
+    # Hallucination guard: if the answer is not supported by the retrieved context,
+    # fall back to a safe response instead of returning invented information.
+    context = _build_context(chunks)
+    if detect_hallucination(answer, context):
+        return {
+            "query": query,
+            "answer": "I do not have enough information to answer this question based on the provided documents.",
+            "citations": [],
+            "citation_texts": [],
+            "retrieval_metadata": {
+                "dense_count": retrieval_result["dense_count"],
+                "bm25_count": retrieval_result["bm25_count"],
+                "reranked_count": retrieval_result["reranked_count"]
+            }
+        }
+
+    citations = build_citations(db, valid_chunk_ids)
     citation_texts = format_citations(citations)
     display_answer = normalize_citation_text(answer)
 

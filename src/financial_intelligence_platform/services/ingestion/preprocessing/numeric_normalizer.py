@@ -17,9 +17,16 @@ def normalize_numbers(text: str) -> str:
 
     # Magnitude suffixes
     def expand_magnitude(match: re.Match) -> str:
-        number = match.group(1).replace(",", "")
-        suffix = match.group(2).upper()
-        value = float(number)
+        number = (match.group(1) or "").replace(",", "")
+        suffix = (match.group(2) or "").upper()
+
+        if not number:
+            return match.group(0)
+
+        try:
+            value = float(number)
+        except ValueError:
+            return match.group(0)
 
         multipliers = {
             "K": 1_000,

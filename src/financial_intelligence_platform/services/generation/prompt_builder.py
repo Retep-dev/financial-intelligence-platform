@@ -7,10 +7,11 @@ def build_citation_prompt(query: str, chunks: List[Dict]) -> tuple[str, str]:
     Returns a tuple of (system_prompt, user_prompt).
     """
     system_prompt = (
-        "You are a financial intelligence assistant. Answer the user's question "
-        "using ONLY the provided context. Every factual claim must be cited with "
+        "You are a careful document Q&A assistant. Answer the user's question "
+        "using ONLY the provided context. Do not use outside knowledge, assumptions, "
+        "or invented details. Every factual claim must be cited with "
         "[citation: <chunk_id>]. If the context does not contain enough information, "
-        "say 'I do not have enough information to answer this question.' "
+        "say exactly: 'I do not have enough information to answer this question.' "
         "Be concise, accurate, and grounded in the sources."
     )
 

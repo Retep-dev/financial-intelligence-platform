@@ -4,29 +4,15 @@ import re
 from financial_intelligence_platform.services.generation.client import generate_text
 
 
-FINANCIAL_ABBREVIATIONS = {
-    "EBITDA": "Earnings Before Interest, Taxes, Depreciation, and Amortization",
-    "EBIT": "Earnings Before Interest and Taxes",
-    "EPS": "Earnings Per Share",
-    "P/E": "Price-to-Earnings ratio",
-    "GAAP": "Generally Accepted Accounting Principles",
-    "IFRS": "International Financial Reporting Standards",
-    "ROI": "Return on Investment",
-    "ROE": "Return on Equity",
-    "ROA": "Return on Assets",
-    "NAV": "Net Asset Value",
-    "AUM": "Assets Under Management",
-    "IPO": "Initial Public Offering",
-    "M&A": "Mergers and Acquisitions",
+DOMAIN_ABBREVIATIONS = {
     " YoY ": " year over year ",
     " QoQ ": " quarter over quarter ",
 }
 
 
 def expand_abbreviations(query: str) -> str:
-    """Expand common financial abbreviations in the query."""
-    for abbreviation, expansion in FINANCIAL_ABBREVIATIONS.items():
-        # Case-insensitive replacement with word boundaries where appropriate
+    """Expand common domain-agnostic abbreviations in the query."""
+    for abbreviation, expansion in DOMAIN_ABBREVIATIONS.items():
         pattern = re.compile(re.escape(abbreviation), re.IGNORECASE)
         query = pattern.sub(f" {expansion} ", query)
     return re.sub(r"\s+", " ", query).strip()
@@ -52,9 +38,10 @@ def enhance_query(query: str, use_llm: bool = True) -> dict:
         }
 
     system_prompt = (
-        "You are a search query optimizer for a financial document retrieval system. "
+        "You are a search query optimizer for a document retrieval system. "
         "Rewrite the user's question into a clear, retrieval-friendly query. "
-        "Expand abbreviations and add financial domain context. "
+        "Do not add assumptions about currency, amounts, or domain-specific details "
+        "that are not in the original question. "
         "Return ONLY a JSON object with keys: rewritten, retrieval_queries. "
         "retrieval_queries should be a list of 1-3 query variants."
     )

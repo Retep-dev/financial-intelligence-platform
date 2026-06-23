@@ -10,7 +10,10 @@ client = TestClient(app)
 def test_ask_endpoint():
     with patch("financial_intelligence_platform.services.retrieval.ask.generate_answer") as mock_answer, \
          patch("financial_intelligence_platform.services.retrieval.ask.hybrid_search") as mock_search, \
-         patch("financial_intelligence_platform.services.retrieval.ask.build_citations") as mock_citations:
+         patch("financial_intelligence_platform.services.retrieval.ask.build_citations") as mock_citations, \
+         patch("financial_intelligence_platform.services.retrieval.ask.detect_hallucination") as mock_hallucination:
+
+        mock_hallucination.return_value = False
 
         chunk_id = "chunk-test-123"
 

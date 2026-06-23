@@ -4,10 +4,10 @@ from financial_intelligence_platform.services.retrieval.query_enhancer import en
 
 
 def test_expand_abbreviations():
-    query = "What was the EBITDA and EPS in Q1?"
+    query = "What was the revenue YoY and QoQ in Q1?"
     result = expand_abbreviations(query)
-    assert "Earnings Before Interest" in result
-    assert "Earnings Per Share" in result
+    assert "year over year" in result
+    assert "quarter over quarter" in result
 
 
 def test_enhance_query_without_llm():

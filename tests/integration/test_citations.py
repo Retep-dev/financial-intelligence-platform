@@ -40,5 +40,6 @@ def test_build_citations():
 
     finally:
         db.query(Chunk).filter(Chunk.document_id == document.id).delete()
+        db.query(Document).filter(Document.id == document.id).delete()
         db.commit()
         db.close()

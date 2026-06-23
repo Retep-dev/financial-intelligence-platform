@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 from financial_intelligence_platform.main import app
 from financial_intelligence_platform.db.postgres.session import SessionLocal
 from financial_intelligence_platform.db.postgres.models.chunk import Chunk
+from financial_intelligence_platform.db.postgres.models.document import Document
 from financial_intelligence_platform.db.qdrant.client import get_qdrant_client
 from financial_intelligence_platform.db.qdrant.collections import COLLECTION_NAME
 from financial_intelligence_platform.db.qdrant.queries import upsert_chunks
@@ -76,6 +77,7 @@ def test_bm25_search():
         assert document.id in [r["payload"]["document_id"] for r in results]
     finally:
         db.query(Chunk).filter(Chunk.document_id == document.id).delete()
+        db.query(Document).filter(Document.id == document.id).delete()
         db.commit()
         db.close()
 
@@ -140,6 +142,7 @@ def test_hybrid_search():
 
     finally:
         db.query(Chunk).filter(Chunk.document_id == document.id).delete()
+        db.query(Document).filter(Document.id == document.id).delete()
         db.commit()
         db.close()
 

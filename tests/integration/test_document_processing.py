@@ -70,3 +70,11 @@ def test_process_document_end_to_end():
 
     finally:
         os.unlink(path)
+
+        db = SessionLocal()
+        try:
+            db.query(Chunk).filter(Chunk.document_id == document.id).delete()
+            db.query(Document).filter(Document.id == document.id).delete()
+            db.commit()
+        finally:
+            db.close()
